@@ -16,16 +16,47 @@ namespace Modsen.API
 
         public async Task InvokeAsync(HttpContext context)
         {
-            await _next(context);
-
-            if (context.Response.StatusCode == StatusCodes.Status401Unauthorized)
+            try
             {
-                context.Response.ContentType = "application/json";
-                await context.Response.WriteAsync("You need to log in to view this page.");
+                await _next(context);
+
+                if (context.Response.StatusCode == StatusCodes.Status404NotFound)
+                {
+                    await HandleCustomResponseAsync(context, "Resource not found.");
+                }
+                else if (context.Response.StatusCode == StatusCodes.Status401Unauthorized)
+                {
+                    await HandleCustomResponseAsync(context, "Unauthorized access. Please log in.");
+                }
+                else if (context.Response.StatusCode == StatusCodes.Status409Conflict)
+                {
+                    await HandleCustomResponseAsync(context, "Conflict occurred while processing the request.");
+                }
+                else if (context.Response.StatusCode == StatusCodes.Status400BadRequest)
+                {
+                    await HandleCustomResponseAsync(context, "Bad request. Please check your input.");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An unexpected error occurred.");
+                await HandleExceptionAsync(context, ex);
             }
         }
 
-        private static Task HandleExceptionAsync(HttpContext context, Exception exception)
+        private static async Task HandleCustomResponseAsync(HttpContext context, string message)
+        {
+            context.Response.ContentType = "application/json";
+            var response = new
+            {
+                StatusCode = context.Response.StatusCode,
+                Message = message
+            };
+            var jsonResponse = JsonSerializer.Serialize(response);
+            await context.Response.WriteAsync(jsonResponse);
+        }
+
+        private static async Task HandleExceptionAsync(HttpContext context, Exception exception)
         {
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
@@ -38,7 +69,7 @@ namespace Modsen.API
             };
 
             var jsonResponse = JsonSerializer.Serialize(response);
-            return context.Response.WriteAsync(jsonResponse);
+            await context.Response.WriteAsync(jsonResponse);
         }
     }
 }
