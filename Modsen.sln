@@ -1,0 +1,63 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "API", "API", "{9B0FE713-113A-4C78-8DA7-1D04F0DE5632}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Modsen.API", "API\Modsen.API\Modsen.API.csproj", "{6E40A25A-A3F6-44B4-B4D4-8B1D8AB1A142}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Application", "Application", "{DA37ACFB-7770-45A9-917A-B0204B048FF5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Modsen.Application", "Application\Modsen.Application\Modsen.Application.csproj", "{93CBAC8D-8B81-41C6-8021-87673683A917}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Domain", "Domain", "{8696F49E-205A-47DC-AF9D-67F00C818092}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Modsen.Domain", "Domain\Modsen.Domain\Modsen.Domain.csproj", "{C78AAEA5-DD61-4697-83F5-48B78C2ABB44}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastructure", "{2D681A81-4865-4C23-A279-14E388726B48}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Modsen.Infrastructure", "Infrastructure\Modsen.Infrastructure\Modsen.Infrastructure.csproj", "{8D2C13D4-38D9-4D0F-957C-1F10A69A5A05}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{8F3A77A4-0352-4270-A73B-4D66DFCB99D1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Modsen.Tests", "Tests\Modsen.Tests\Modsen.Tests.csproj", "{DA78D452-0542-4C82-B088-92C7AED00C68}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6E40A25A-A3F6-44B4-B4D4-8B1D8AB1A142}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6E40A25A-A3F6-44B4-B4D4-8B1D8AB1A142}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6E40A25A-A3F6-44B4-B4D4-8B1D8AB1A142}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6E40A25A-A3F6-44B4-B4D4-8B1D8AB1A142}.Release|Any CPU.Build.0 = Release|Any CPU
+		{93CBAC8D-8B81-41C6-8021-87673683A917}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{93CBAC8D-8B81-41C6-8021-87673683A917}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{93CBAC8D-8B81-41C6-8021-87673683A917}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{93CBAC8D-8B81-41C6-8021-87673683A917}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C78AAEA5-DD61-4697-83F5-48B78C2ABB44}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C78AAEA5-DD61-4697-83F5-48B78C2ABB44}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C78AAEA5-DD61-4697-83F5-48B78C2ABB44}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C78AAEA5-DD61-4697-83F5-48B78C2ABB44}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8D2C13D4-38D9-4D0F-957C-1F10A69A5A05}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8D2C13D4-38D9-4D0F-957C-1F10A69A5A05}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8D2C13D4-38D9-4D0F-957C-1F10A69A5A05}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8D2C13D4-38D9-4D0F-957C-1F10A69A5A05}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DA78D452-0542-4C82-B088-92C7AED00C68}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DA78D452-0542-4C82-B088-92C7AED00C68}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DA78D452-0542-4C82-B088-92C7AED00C68}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DA78D452-0542-4C82-B088-92C7AED00C68}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{6E40A25A-A3F6-44B4-B4D4-8B1D8AB1A142} = {9B0FE713-113A-4C78-8DA7-1D04F0DE5632}
+		{93CBAC8D-8B81-41C6-8021-87673683A917} = {DA37ACFB-7770-45A9-917A-B0204B048FF5}
+		{C78AAEA5-DD61-4697-83F5-48B78C2ABB44} = {8696F49E-205A-47DC-AF9D-67F00C818092}
+		{8D2C13D4-38D9-4D0F-957C-1F10A69A5A05} = {2D681A81-4865-4C23-A279-14E388726B48}
+		{DA78D452-0542-4C82-B088-92C7AED00C68} = {8F3A77A4-0352-4270-A73B-4D66DFCB99D1}
+	EndGlobalSection
+EndGlobal
