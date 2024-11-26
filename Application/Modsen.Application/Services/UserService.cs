@@ -1,6 +1,8 @@
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using Microsoft.IdentityModel.Tokens;
 using Modsen.Domain;
 using Modsen.DTO;
 
@@ -88,7 +90,7 @@ namespace Modsen.Application
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var token = new JwtSecurityToken(
-                issuer: "ModsenPractice",
+                issuer: "Modsen-2v.0",
                 audience: "User",
                 claims: claims,
                 expires: DateTime.Now.AddMinutes(15),

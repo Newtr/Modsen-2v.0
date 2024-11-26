@@ -10,7 +10,7 @@ namespace Modsen.Application
     {
         public static string SaveImage(IFormFile EventImage, IWebHostEnvironment hostEnvironment)
         {
-            var uploadsFolder = Path.Combine(hostEnvironment.WebRootPath, "images");
+            var uploadsFolder = Path.Combine(hostEnvironment.WebRootPath, "Images");
 
             if (!Directory.Exists(uploadsFolder))
             {
@@ -34,7 +34,7 @@ namespace Modsen.Application
                 EventImage.CopyTo(fileStream);
             }
 
-            return Path.Combine("images", uniqueFileName);
+            return Path.Combine("Images", uniqueFileName);
         }
 
 
@@ -45,7 +45,7 @@ namespace Modsen.Application
 
         public static void DeleteUnusedImages(IWebHostEnvironment hostEnvironment, ModsenContext dbContext)
         {
-            var uploadsFolder = Path.Combine(hostEnvironment.WebRootPath, "images");
+            var uploadsFolder = Path.Combine(hostEnvironment.WebRootPath, "Images");
 
             var allFiles = Directory.GetFiles(uploadsFolder);
 
@@ -54,7 +54,7 @@ namespace Modsen.Application
             foreach (var filePath in allFiles)
             {
                 var fileName = Path.GetFileName(filePath);
-                if (!usedImages.Contains("images\\" + fileName))
+                if (!usedImages.Contains("Images\\" + fileName))
                 {
                     System.IO.File.Delete(filePath);
                 }
