@@ -2,6 +2,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Domain\Modsen.Domain\Modsen.Domain.csproj" />
+    <ProjectReference Include="..\..\Infrastructure\Modsen.Infrastructure\Modsen.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BCrypt.Net" Version="0.1.0" />
+    <PackageReference Include="FluentValidation" Version="11.11.0" />
   </ItemGroup>
 
   <PropertyGroup>
