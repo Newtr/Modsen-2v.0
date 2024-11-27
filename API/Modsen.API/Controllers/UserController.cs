@@ -34,9 +34,7 @@ namespace Modsen.API
             var (isValid, accessToken, refreshToken) = await _userService.LoginUser(loginDto);
 
             if (!isValid)
-            {
-                return Unauthorized("Invalid email or password.");
-            }
+                throw new UnauthorizedException("Invalid email or password.");
 
             return Ok(new { AccessToken = accessToken, RefreshToken = refreshToken });
         }
@@ -60,16 +58,12 @@ namespace Modsen.API
         public async Task<IActionResult> GetAllUsers(int page = 1, int pageSize = 10)
         {
             if (page <= 0 || pageSize <= 0)
-            {
-                return BadRequest("Page and pageSize must be greater than zero.");
-            }
+                throw new BadRequestException("Page and pageSize must be greater than zero.");
 
             var users = await _userService.GetAllUsers(page, pageSize);
 
             if (!users.Any())
-            {
-                return NotFound("No users found.");
-            }
+                throw new NotFoundException("No users found.");
 
             return Ok(users);
         }

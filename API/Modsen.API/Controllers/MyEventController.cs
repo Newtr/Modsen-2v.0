@@ -28,14 +28,14 @@ namespace Modsen.API
         public async Task<ActionResult<MyEvent>> GetEventById(int id)
         {
             var myEvent = await _eventService.GetEventByIdAsync(id);
-            return myEvent != null ? Ok(myEvent) : NotFound();
+            return Ok(myEvent);
         }
 
         [HttpGet("name/{name}")]
         public async Task<ActionResult<MyEvent>> GetEventByName(string name)
         {
             var myEvent = await _eventService.GetEventByNameAsync(name);
-            return myEvent != null ? Ok(myEvent) : NotFound();
+            return Ok(myEvent);
         }
 
         [HttpGet("filter")]
@@ -55,22 +55,22 @@ namespace Modsen.API
         [HttpPost("{id}/add-images")]
         public async Task<IActionResult> AddImagesToEvent(int id, List<IFormFile> eventImages)
         {
-            bool result = await _eventService.AddImagesToEventAsync(id, eventImages, _hostEnvironment);
-            return result ? Ok("Изображения успешно добавлены.") : NotFound("Событие не найдено.");
+            await _eventService.AddImagesToEventAsync(id, eventImages, _hostEnvironment);
+            return Ok("Images successfully added.");
         }
 
         [HttpPut("{id}")]
         public async Task<ActionResult<MyEvent>> UpdateEventById(int id, [FromForm] MyEvent updatedEvent, List<IFormFile> eventImages, [FromForm] string userEmail)
         {
-            bool result = await _eventService.UpdateEventAsync(id, updatedEvent, eventImages, userEmail, _hostEnvironment);
-            return result ? Ok($"Event with id {id} was updated") : NotFound();
+            await _eventService.UpdateEventAsync(id, updatedEvent, eventImages, userEmail, _hostEnvironment);
+            return Ok($"Event with id {id} was updated");
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteEvent(int id)
         {
-            bool result = await _eventService.DeleteEventAsync(id, _hostEnvironment);
-            return result ? Ok($"Event with id {id} and all associated images were deleted") : NotFound();
+            await _eventService.DeleteEventAsync(id, _hostEnvironment);
+            return Ok($"Event with id {id} and all associated images were deleted");
         }
     }
 }

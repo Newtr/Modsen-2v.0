@@ -28,6 +28,8 @@ builder.Services.AddScoped<ImageService>();
 builder.Services.AddScoped<EmailService>();
 builder.Services.AddScoped<MemberService>();
 
+builder.Services.AddSingleton<IExceptionHandler, ExceptionHandlerService>();
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<TokenService>();
@@ -68,7 +70,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseMiddleware<ExceptionHandlingMiddleware>();
+app.UseMiddleware<CheckMiddleware>();
 
 app.UseAuthentication();
 app.UseAuthorization();
