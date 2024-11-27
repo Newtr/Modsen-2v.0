@@ -4,7 +4,7 @@ namespace Modsen.Domain
     {
         Task<IEnumerable<T>> GetAllAsync();
         Task<T> GetByIdAsync(int id);
-        Task AddAsync(T entity);
+        Task AddAsync(T entity, CancellationToken cancellationToken);
         Task UpdateAsync(T entity);
         Task DeleteAsync(T entity);
     }

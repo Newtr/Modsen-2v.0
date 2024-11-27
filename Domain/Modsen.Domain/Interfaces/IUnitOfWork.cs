@@ -5,6 +5,6 @@ namespace Modsen.Domain
         IUserRepository UserRepository { get; }
         IRoleRepository RoleRepository { get; }
 
-        Task<int> CommitAsync();
+        Task<int> CommitAsync(CancellationToken cancellationToken);
     }
 }

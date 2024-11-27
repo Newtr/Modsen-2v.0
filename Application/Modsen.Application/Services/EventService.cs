@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Modsen.Domain;
 using Modsen.Infrastructure;
+using System.Threading;
 
 namespace Modsen.Application
 {
@@ -27,44 +28,44 @@ namespace Modsen.Application
             _addImagesToEventUseCase = addImagesToEventUseCase;
         }
 
-        public async Task<IEnumerable<MyEvent>> GetAllEventsAsync()
+        public async Task<IEnumerable<MyEvent>> GetAllEventsAsync(CancellationToken cancellationToken)
         {
-            return await _getEventsUseCase.GetAllEventsAsync();
+            return await _getEventsUseCase.GetAllEventsAsync(cancellationToken);
         }
 
-        public async Task<MyEvent> GetEventByIdAsync(int id)
+        public async Task<MyEvent> GetEventByIdAsync(int id, CancellationToken cancellationToken)
         {
-            return await _getEventsUseCase.GetEventByIdAsync(id);
+            return await _getEventsUseCase.GetEventByIdAsync(id, cancellationToken);
         }
 
-        public async Task<MyEvent> GetEventByNameAsync(string name)
+        public async Task<MyEvent> GetEventByNameAsync(string name, CancellationToken cancellationToken)
         {
-            return await _getEventsUseCase.GetEventByNameAsync(name);
+            return await _getEventsUseCase.GetEventByNameAsync(name, cancellationToken);
         }
 
-        public async Task<IEnumerable<MyEvent>> GetEventsByCriteriaAsync(DateTime? date, string? location, string? category)
+        public async Task<IEnumerable<MyEvent>> GetEventsByCriteriaAsync(DateTime? date, string? location, string? category, CancellationToken cancellationToken)
         {
-            return await _getEventsUseCase.GetEventsByCriteriaAsync(date, location, category);
+            return await _getEventsUseCase.GetEventsByCriteriaAsync(date, location, category, cancellationToken);
         }
 
-        public async Task<MyEvent> CreateEventAsync(MyEvent newEvent, List<IFormFile> eventImages, IWebHostEnvironment hostEnvironment)
+        public async Task<MyEvent> CreateEventAsync(MyEvent newEvent, List<IFormFile> eventImages, IWebHostEnvironment hostEnvironment, CancellationToken cancellationToken)
         {
-            return await _createEventUseCase.CreateEventAsync(newEvent, eventImages, hostEnvironment);
+            return await _createEventUseCase.CreateEventAsync(newEvent, eventImages, hostEnvironment, cancellationToken);
         }
 
-        public async Task AddImagesToEventAsync(int eventId, List<IFormFile> eventImages, IWebHostEnvironment hostEnvironment)
+        public async Task AddImagesToEventAsync(int eventId, List<IFormFile> eventImages, IWebHostEnvironment hostEnvironment, CancellationToken cancellationToken)
         {
-            await _addImagesToEventUseCase.AddImagesToEventAsync(eventId, eventImages, hostEnvironment);
+            await _addImagesToEventUseCase.AddImagesToEventAsync(eventId, eventImages, hostEnvironment, cancellationToken);
         }
 
-        public async Task UpdateEventAsync(int eventId, MyEvent updatedEvent, List<IFormFile> eventImages, string userEmail, IWebHostEnvironment hostEnvironment)
+        public async Task UpdateEventAsync(int eventId, MyEvent updatedEvent, List<IFormFile> eventImages, string userEmail, IWebHostEnvironment hostEnvironment, CancellationToken cancellationToken)
         {
-            await _updateEventUseCase.UpdateEventAsync(eventId, updatedEvent, eventImages, userEmail, hostEnvironment);
+            await _updateEventUseCase.UpdateEventAsync(eventId, updatedEvent, eventImages, userEmail, hostEnvironment, cancellationToken);
         }
 
-        public async Task DeleteEventAsync(int eventId, IWebHostEnvironment hostEnvironment)
+        public async Task DeleteEventAsync(int eventId, IWebHostEnvironment hostEnvironment, CancellationToken cancellationToken)
         {
-            await _deleteEventUseCase.DeleteEventAsync(eventId, hostEnvironment);
+            await _deleteEventUseCase.DeleteEventAsync(eventId, hostEnvironment, cancellationToken);
         }
     }
 }

@@ -22,17 +22,21 @@ namespace Modsen.Infrastructure
             return await _context.Users.Include(u => u.Role).SingleOrDefaultAsync(u => u.Id == id);
         }
 
-        public async Task<User> GetByEmailAsync(string email)
-        {
-            return await _context.Users.Include(u => u.Role).SingleOrDefaultAsync(u => u.Email == email);
-        }
-
-        public async Task<User> GetByRefreshTokenAsync(string refreshToken)
+        public async Task<User> GetByEmailAsync(string email, CancellationToken cancellationToken = default)
         {
             return await _context.Users
                 .Include(u => u.Role)
-                .SingleOrDefaultAsync(u => u.RefreshToken == refreshToken);
+                .SingleOrDefaultAsync(u => u.Email == email, cancellationToken);
         }
+
+
+        public async Task<User> GetByRefreshTokenAsync(string refreshToken, CancellationToken cancellationToken = default)
+        {
+            return await _context.Users
+                .Include(u => u.Role)
+                .SingleOrDefaultAsync(u => u.RefreshToken == refreshToken, cancellationToken);
+        }
+
 
         public async Task<IQueryable<User>> GetUsersAsync(int page, int pageSize)
         {
@@ -43,15 +47,17 @@ namespace Modsen.Infrastructure
                     .AsQueryable());
         }
 
-        public async Task<bool> AnyAsync(string email)
+        public async Task<bool> AnyAsync(string email, CancellationToken cancellationToken = default)
         {
-            return await _context.Users.AnyAsync(u => u.Email == email);
+            return await _context.Users.AnyAsync(u => u.Email == email, cancellationToken);
         }
 
-        public async Task AddAsync(User entity)
+
+        public async Task AddAsync(User entity, CancellationToken cancellationToken = default)
         {
-            await _context.Users.AddAsync(entity);
+            await _context.Users.AddAsync(entity, cancellationToken);
         }
+
 
         public async Task UpdateAsync(User entity)
         {

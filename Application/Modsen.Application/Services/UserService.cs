@@ -3,10 +3,12 @@ using System.Security.Claims;
 using Modsen.Domain;
 using Modsen.DTO;
 using Modsen.Infrastructure;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Modsen.Application
 {
-    public class UserService : IUserService
+   public class UserService : IUserService
 {
     private readonly RegisterUserUseCase _registerUserUseCase;
     private readonly LoginUserUseCase _loginUserUseCase;
@@ -25,24 +27,25 @@ namespace Modsen.Application
         _getAllUsersUseCase = getAllUsersUseCase;
     }
 
-    public Task<bool> RegisterUser(UserRegistrationDto registrationDto)
+    public Task RegisterUser(UserRegistrationDto registrationDto, CancellationToken cancellationToken)
     {
-        return _registerUserUseCase.Execute(registrationDto);
+        return _registerUserUseCase.Execute(registrationDto, cancellationToken); // Return Task
     }
 
-    public Task<(bool IsValid, string AccessToken, string RefreshToken)> LoginUser(UserLoginDto loginDto)
+    public Task<(bool isValid, string accessToken, string refreshToken)> LoginUser(UserLoginDto loginDto, CancellationToken cancellationToken)
     {
-        return _loginUserUseCase.Execute(loginDto);
+        return _loginUserUseCase.Execute(loginDto, cancellationToken);
     }
 
-    public Task<string> RefreshToken(string refreshToken)
+    public Task<IEnumerable<User>> GetAllUsers(int page, int pageSize, CancellationToken cancellationToken)
     {
-        return _refreshTokenUseCase.Execute(refreshToken);
+        return _getAllUsersUseCase.Execute(page, pageSize, cancellationToken);
     }
 
-    public Task<IEnumerable<User>> GetAllUsers(int page, int pageSize)
+    public Task<string> RefreshToken(string refreshToken, CancellationToken cancellationToken)
     {
-        return _getAllUsersUseCase.Execute(page, pageSize);
+        return _refreshTokenUseCase.Execute(refreshToken, cancellationToken);
     }
 }
+
 }

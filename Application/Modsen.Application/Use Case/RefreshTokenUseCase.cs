@@ -15,9 +15,9 @@ public class RefreshTokenUseCase
         _tokenService = tokenService;
     }
 
-    public async Task<string> Execute(string refreshToken)
+    public async Task<string> Execute(string refreshToken, CancellationToken cancellationToken = default)
     {
-        var user = await _unitOfWork.UserRepository.GetByRefreshTokenAsync(refreshToken);
+        var user = await _unitOfWork.UserRepository.GetByRefreshTokenAsync(refreshToken, cancellationToken);
 
         if (user == null || user.RefreshTokenExpiryTime <= DateTime.UtcNow)
         {
@@ -33,6 +33,7 @@ public class RefreshTokenUseCase
 
         return _tokenService.GenerateAccessToken(claims);
     }
+
 }
 
 }

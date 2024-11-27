@@ -20,32 +20,32 @@ namespace Modsen.API
         }
 
         [HttpGet("{eventId}/members")]
-        public async Task<ActionResult<IEnumerable<MemberDto>>> GetEventMembers(int eventId)
+        public async Task<ActionResult<IEnumerable<MemberDto>>> GetEventMembers(int eventId, CancellationToken cancellationToken)
         {
-            var members = await _memberService.GetEventMembersAsync(eventId);
+            var members = await _memberService.GetEventMembersAsync(eventId, cancellationToken);
             var memberDtos = _mapper.Map<IEnumerable<MemberDto>>(members);
             return Ok(memberDtos);
         }
 
         [HttpGet("member/{memberId}")]
-        public async Task<ActionResult<MemberDto>> GetMemberById(int memberId)
+        public async Task<ActionResult<MemberDto>> GetMemberById(int memberId, CancellationToken cancellationToken)
         {
-            var member = await _memberService.GetMemberByIdAsync(memberId);
+            var member = await _memberService.GetMemberByIdAsync(memberId, cancellationToken);
             var memberDto = _mapper.Map<MemberDto>(member);
             return Ok(memberDto);
         }
 
         [HttpPost("{eventId}/register")]
-        public async Task<IActionResult> RegisterMember(int eventId, [FromBody] int memberId)
+        public async Task<IActionResult> RegisterMember(int eventId, [FromBody] int memberId, CancellationToken cancellationToken)
         {
-            var result = await _memberService.RegisterMemberAsync(eventId, memberId);
+            var result = await _memberService.RegisterMemberAsync(eventId, memberId, cancellationToken);
             return Ok(result);
         }
 
         [HttpDelete("unregister")]
-        public async Task<IActionResult> UnregisterFromEvent(int eventId, int memberId)
+        public async Task<IActionResult> UnregisterFromEvent(int eventId, int memberId, CancellationToken cancellationToken)
         {
-            var result = await _memberService.UnregisterMemberAsync(eventId, memberId);
+            var result = await _memberService.UnregisterMemberAsync(eventId, memberId, cancellationToken);
             return Ok(result);
         }
     }

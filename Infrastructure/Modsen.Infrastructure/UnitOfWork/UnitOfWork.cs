@@ -23,10 +23,11 @@ namespace Modsen.Infrastructure
             get { return _roleRepository ??= new RoleRepository(_context); }
         }
 
-        public async Task<int> CommitAsync()
+        public async Task<int> CommitAsync(CancellationToken cancellationToken)
         {
-            return await _context.SaveChangesAsync();
+            return await _context.SaveChangesAsync(cancellationToken);
         }
+
 
         public void Dispose()
         {

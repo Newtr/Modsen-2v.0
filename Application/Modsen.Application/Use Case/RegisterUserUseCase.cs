@@ -1,41 +1,42 @@
 using Modsen.Domain;
 using Modsen.DTO;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Modsen.Application
 {
-public class RegisterUserUseCase
-{
-    private readonly IUnitOfWork _unitOfWork;
-
-    public RegisterUserUseCase(IUnitOfWork unitOfWork)
+    public class RegisterUserUseCase
     {
-        _unitOfWork = unitOfWork;
-    }
+        private readonly IUnitOfWork _unitOfWork;
 
-    public async Task<bool> Execute(UserRegistrationDto registrationDto)
-    {
-        if (await _unitOfWork.UserRepository.AnyAsync(registrationDto.Email))
+        public RegisterUserUseCase(IUnitOfWork unitOfWork)
         {
-            throw new BadRequestException("User with this email already exists.");
+            _unitOfWork = unitOfWork;
         }
 
-        var passwordHash = BCrypt.Net.BCrypt.HashPassword(registrationDto.Password);
-
-        var newUser = new User
+        public async Task<bool> Execute(UserRegistrationDto registrationDto, CancellationToken cancellationToken = default)
         {
-            Username = registrationDto.Username,
-            Email = registrationDto.Email,
-            PasswordHash = passwordHash,
-            RoleId = 1,
-            RefreshToken = null,
-            RefreshTokenExpiryTime = DateTime.UtcNow
-        };
+            if (await _unitOfWork.UserRepository.AnyAsync(registrationDto.Email, cancellationToken))
+            {
+                throw new BadRequestException("User with this email already exists.");
+            }
 
-        await _unitOfWork.UserRepository.AddAsync(newUser);
-        await _unitOfWork.CommitAsync();
+            var passwordHash = BCrypt.Net.BCrypt.HashPassword(registrationDto.Password);
 
-        return true;
+            var newUser = new User
+            {
+                Username = registrationDto.Username,
+                Email = registrationDto.Email,
+                PasswordHash = passwordHash,
+                RoleId = 1,
+                RefreshToken = null,
+                RefreshTokenExpiryTime = DateTime.UtcNow
+            };
+
+            await _unitOfWork.UserRepository.AddAsync(newUser, cancellationToken);
+            await _unitOfWork.CommitAsync(cancellationToken);
+
+            return true;
+        }
     }
-}
-
 }

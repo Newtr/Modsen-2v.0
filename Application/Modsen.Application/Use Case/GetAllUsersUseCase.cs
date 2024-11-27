@@ -12,7 +12,7 @@ public class GetAllUsersUseCase
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<IEnumerable<User>> Execute(int page, int pageSize)
+    public async Task<IEnumerable<User>> Execute(int page, int pageSize, CancellationToken cancellationToken = default)
     {
         if (page <= 0 || pageSize <= 0)
         {
@@ -20,7 +20,9 @@ public class GetAllUsersUseCase
         }
 
         var usersQuery = await _unitOfWork.UserRepository.GetUsersAsync(page, pageSize);
-        var users = await usersQuery.AsNoTracking().ToListAsync();
+
+        // Передаем cancellationToken в ToListAsync
+        var users = await usersQuery.AsNoTracking().ToListAsync(cancellationToken);
 
         if (!users.Any())
         {
@@ -29,6 +31,7 @@ public class GetAllUsersUseCase
 
         return users;
     }
+
 }
 
 }

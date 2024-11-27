@@ -3,71 +3,72 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Modsen.Domain;
 using Modsen.DTO;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Modsen.API
 {
     [Route("api/[controller]")]
-[ApiController]
-public class UserController : ControllerBase
-{
-    private readonly IUserService _userService;
-    private readonly IMapper _mapper;
-
-    public UserController(IUserService userService, IMapper mapper)
+    [ApiController]
+    public class UserController : ControllerBase
     {
-        _userService = userService;
-        _mapper = mapper;
-    }
+        private readonly IUserService _userService;
+        private readonly IMapper _mapper;
 
-    [HttpPost("register")]
-    public async Task<IActionResult> Register(UserRegistrationDto registrationDto)
-    {
-        await _userService.RegisterUser(registrationDto);
-        return Ok("User registered successfully");
-    }
-
-    [HttpPost("login")]
-    public async Task<IActionResult> Login([FromBody] UserLoginDto loginDto)
-    {
-        var (isValid, accessToken, refreshToken) = await _userService.LoginUser(loginDto);
-
-        if (!isValid)
+        public UserController(IUserService userService, IMapper mapper)
         {
-            return Unauthorized(new { Error = "Invalid email or password" });
+            _userService = userService;
+            _mapper = mapper;
         }
 
-        return Ok(new { AccessToken = accessToken, RefreshToken = refreshToken });
-    }
+        [HttpPost("register")]
+        public async Task<IActionResult> Register(UserRegistrationDto registrationDto, CancellationToken cancellationToken)
+        {
+            await _userService.RegisterUser(registrationDto, cancellationToken);
+            return Ok("User registered successfully");
+        }
 
-    [HttpGet("check-information")]
-    [Authorize]
-    public IActionResult CheckInformation()
-    {
-        var username = User.Identity?.Name;
-        return Ok($"Hello {username}, this is a super cool page. You can see it because you have been logged in.");
-    }
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] UserLoginDto loginDto, CancellationToken cancellationToken)
+        {
+            var (isValid, accessToken, refreshToken) = await _userService.LoginUser(loginDto, cancellationToken);
 
-    [HttpGet("admin-resource")]
-    [Authorize(Policy = "AdminOnly")]
-    public IActionResult GetAdminResource()
-    {
-        return Ok("This is a protected admin resource.");
-    }
+            if (!isValid)
+            {
+                return Unauthorized(new { Error = "Invalid email or password" });
+            }
 
-    [HttpGet("all")]
-    public async Task<IActionResult> GetAllUsers(int page = 1, int pageSize = 10)
-    {
-        var users = await _userService.GetAllUsers(page, pageSize);
-        var userDtos = _mapper.Map<IEnumerable<UserLoginDto>>(users);
-        return Ok(userDtos);
-    }
+            return Ok(new { AccessToken = accessToken, RefreshToken = refreshToken });
+        }
 
-    [HttpPost("refresh-token")]
-    public async Task<IActionResult> RefreshToken(TokenRequestDto tokenRequest)
-    {
-        var newAccessToken = await _userService.RefreshToken(tokenRequest.RefreshToken);
-        return Ok(new { AccessToken = newAccessToken });
-    }
-}
+        [HttpGet("check-information")]
+        [Authorize]
+        public IActionResult CheckInformation()
+        {
+            var username = User.Identity?.Name;
+            return Ok($"Hello {username}, this is a super cool page. You can see it because you have been logged in.");
+        }
 
+        [HttpGet("admin-resource")]
+        [Authorize(Policy = "AdminOnly")]
+        public IActionResult GetAdminResource()
+        {
+            return Ok("This is a protected admin resource.");
+        }
+
+        [HttpGet("all")]
+        public async Task<IActionResult> GetAllUsers(int page = 1, int pageSize = 10, CancellationToken cancellationToken = default)
+        {
+            var users = await _userService.GetAllUsers(page, pageSize, cancellationToken);
+            var userDtos = _mapper.Map<IEnumerable<UserLoginDto>>(users);
+            return Ok(userDtos);
+        }
+
+        [HttpPost("refresh-token")]
+        public async Task<IActionResult> RefreshToken(TokenRequestDto tokenRequest, CancellationToken cancellationToken)
+        {
+            var newAccessToken = await _userService.RefreshToken(tokenRequest.RefreshToken, cancellationToken);
+            return Ok(new { AccessToken = newAccessToken });
+        }
+    }
 }

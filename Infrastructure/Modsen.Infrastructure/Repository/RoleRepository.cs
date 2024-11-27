@@ -22,10 +22,11 @@ namespace Modsen.Infrastructure
             return await _context.Roles.FindAsync(id);
         }
 
-        public async Task AddAsync(Role entity)
+        public async Task AddAsync(Role entity, CancellationToken cancellationToken)
         {
-            await _context.Roles.AddAsync(entity);
+            await _context.Roles.AddAsync(entity, cancellationToken);
         }
+
 
         public async Task UpdateAsync(Role entity)
         {

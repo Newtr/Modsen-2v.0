@@ -2,11 +2,12 @@ using Modsen.DTO;
 
 namespace Modsen.Domain
 {
-    public interface IUserService
-    {
-        Task<bool> RegisterUser(UserRegistrationDto registrationDto);
-        Task<(bool IsValid, string AccessToken, string RefreshToken)> LoginUser(UserLoginDto loginDto);
-        Task<string> RefreshToken(string refreshToken);
-        Task<IEnumerable<User>> GetAllUsers(int page, int pageSize);
-    }
+public interface IUserService
+{
+    Task RegisterUser(UserRegistrationDto registrationDto, CancellationToken cancellationToken); 
+    Task<(bool isValid, string accessToken, string refreshToken)> LoginUser(UserLoginDto loginDto, CancellationToken cancellationToken);
+    Task<IEnumerable<User>> GetAllUsers(int page, int pageSize, CancellationToken cancellationToken);
+    Task<string> RefreshToken(string refreshToken, CancellationToken cancellationToken);
+}
+
 }
