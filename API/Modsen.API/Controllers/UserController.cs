@@ -1,3 +1,4 @@
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Modsen.Domain;
@@ -10,10 +11,12 @@ namespace Modsen.API
 public class UserController : ControllerBase
 {
     private readonly IUserService _userService;
+    private readonly IMapper _mapper;
 
-    public UserController(IUserService userService)
+    public UserController(IUserService userService, IMapper mapper)
     {
         _userService = userService;
+        _mapper = mapper;
     }
 
     [HttpPost("register")]
@@ -55,7 +58,8 @@ public class UserController : ControllerBase
     public async Task<IActionResult> GetAllUsers(int page = 1, int pageSize = 10)
     {
         var users = await _userService.GetAllUsers(page, pageSize);
-        return Ok(users);
+        var userDtos = _mapper.Map<IEnumerable<UserLoginDto>>(users);
+        return Ok(userDtos);
     }
 
     [HttpPost("refresh-token")]

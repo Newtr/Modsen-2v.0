@@ -1,6 +1,8 @@
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Modsen.Application;
 using Modsen.Domain;
+using Modsen.DTO;
 
 namespace Modsen.API
 {
@@ -11,31 +13,37 @@ namespace Modsen.API
         private readonly EventService _eventService;
         private readonly IWebHostEnvironment _hostEnvironment;
 
-        public MyEventsController(EventService eventService, IWebHostEnvironment hostEnvironment)
+        private readonly IMapper _mapper;
+
+        public MyEventsController(EventService eventService, IWebHostEnvironment hostEnvironment, IMapper mapper)
         {
             _eventService = eventService;
             _hostEnvironment = hostEnvironment;
+             _mapper = mapper;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<MyEvent>>> GetAllEvents()
+        public async Task<ActionResult<IEnumerable<EventDto>>> GetAllEvents()
         {
             var allEvents = await _eventService.GetAllEventsAsync();
-            return Ok(allEvents);
+            var eventDtos = _mapper.Map<IEnumerable<EventDto>>(allEvents);
+            return Ok(eventDtos);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<MyEvent>> GetEventById(int id)
+        public async Task<ActionResult<EventDto>> GetEventById(int id)
         {
             var myEvent = await _eventService.GetEventByIdAsync(id);
-            return Ok(myEvent);
+            var eventDto = _mapper.Map<EventDto>(myEvent);
+            return Ok(eventDto);
         }
 
         [HttpGet("name/{name}")]
-        public async Task<ActionResult<MyEvent>> GetEventByName(string name)
+        public async Task<ActionResult<EventDto>> GetEventByName(string name)
         {
             var myEvent = await _eventService.GetEventByNameAsync(name);
-            return Ok(myEvent);
+            var eventDto = _mapper.Map<EventDto>(myEvent);
+            return Ok(eventDto);
         }
 
         [HttpGet("filter")]

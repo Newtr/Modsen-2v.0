@@ -1,6 +1,8 @@
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Modsen.Application;
 using Modsen.Domain;
+using Modsen.DTO;
 
 namespace Modsen.API
 {
@@ -9,24 +11,28 @@ namespace Modsen.API
     public class MyMembersController : ControllerBase
     {
         private readonly MemberService _memberService;
+        private readonly IMapper _mapper;
 
-        public MyMembersController(MemberService memberService)
+        public MyMembersController(MemberService memberService, IMapper mapper)
         {
             _memberService = memberService;
+            _mapper = mapper;
         }
 
         [HttpGet("{eventId}/members")]
-        public async Task<ActionResult<IEnumerable<Member>>> GetEventMembers(int eventId)
+        public async Task<ActionResult<IEnumerable<MemberDto>>> GetEventMembers(int eventId)
         {
             var members = await _memberService.GetEventMembersAsync(eventId);
-            return Ok(members);
+            var memberDtos = _mapper.Map<IEnumerable<MemberDto>>(members);
+            return Ok(memberDtos);
         }
 
         [HttpGet("member/{memberId}")]
-        public async Task<ActionResult<Member>> GetMemberById(int memberId)
+        public async Task<ActionResult<MemberDto>> GetMemberById(int memberId)
         {
             var member = await _memberService.GetMemberByIdAsync(memberId);
-            return Ok(member);
+            var memberDto = _mapper.Map<MemberDto>(member);
+            return Ok(memberDto);
         }
 
         [HttpPost("{eventId}/register")]
