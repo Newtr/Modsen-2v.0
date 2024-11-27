@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Modsen.Domain;
+using System.Linq.Expressions;
 
 namespace Modsen.Infrastructure
 {
@@ -34,34 +35,28 @@ namespace Modsen.Infrastructure
             _dbSet.Update(entity);
         }
 
-        public async Task DeleteAsync(int id, CancellationToken cancellationToken)
-        {
-            var entity = await GetByIdAsync(id, cancellationToken);
-            if (entity != null)
-            {
-                _dbSet.Remove(entity);
-            }
-        }
-
-        public async Task<int> SaveChangesAsync(CancellationToken cancellationToken)
-        {
-            return await _context.SaveChangesAsync(cancellationToken);
-        }
-
         public async Task DeleteAsync(T entity, CancellationToken cancellationToken)
         {
             _dbSet.Remove(entity);
             await Task.CompletedTask;
         }
 
-        public async Task<IEnumerable<T>> GetPagedAsync(int pageNumber, int pageSize, CancellationToken cancellationToken)
+        public async Task<IEnumerable<T>> GetPagedAsync(int page, int pageSize, CancellationToken cancellationToken)
         {
             return await _dbSet.AsNoTracking()
-                            .Skip((pageNumber - 1) * pageSize)
-                            .Take(pageSize)
-                            .ToListAsync(cancellationToken);
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync(cancellationToken);
         }
 
+        public IQueryable<T> Find(Expression<Func<T, bool>> predicate)
+        {
+            return _dbSet.Where(predicate).AsQueryable();
+        }
 
+        public IQueryable<T> Include(Expression<Func<T, object>> includeExpression)
+        {
+            return _dbSet.Include(includeExpression);
+        }
     }
 }

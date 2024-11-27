@@ -9,16 +9,13 @@ namespace Modsen.Infrastructure
 
         public async Task<User> GetByEmailAsync(string email, CancellationToken cancellationToken = default)
         {
-            return await _dbSet
-                .Include(u => u.Role)
-                .SingleOrDefaultAsync(u => u.Email == email, cancellationToken);
+            return await Find(u => u.Email == email)
+                .FirstOrDefaultAsync(cancellationToken);
         }
-
         public async Task<User> GetByRefreshTokenAsync(string refreshToken, CancellationToken cancellationToken = default)
         {
-            return await _dbSet
-                .Include(u => u.Role)
-                .SingleOrDefaultAsync(u => u.RefreshToken == refreshToken, cancellationToken);
+            return await Find(u => u.RefreshToken == refreshToken)
+                .FirstOrDefaultAsync(cancellationToken);
         }
 
         public async Task<bool> AnyAsync(string email, CancellationToken cancellationToken = default)
@@ -26,13 +23,17 @@ namespace Modsen.Infrastructure
             return await _dbSet.AnyAsync(u => u.Email == email, cancellationToken);
         }
 
+        public async Task<IEnumerable<User>> GetPagedAsync(int page, int pageSize, CancellationToken cancellationToken)
+        {
+            return await GetPagedAsync(page, pageSize, cancellationToken);
+        }
+
         public async Task<IQueryable<User>> GetUsersAsync(int page, int pageSize)
         {
-            return await Task.Run(() =>
-                _dbSet.Include(u => u.Role)
-                    .Skip((page - 1) * pageSize)
-                    .Take(pageSize)
-                    .AsQueryable());
+            return _dbSet.AsNoTracking()
+                        .Skip((page - 1) * pageSize)
+                        .Take(pageSize);
         }
+
     }
 }
