@@ -7,32 +7,33 @@ namespace Modsen.Application
 {
 public class ImageService
 {
+    private readonly SaveImagesUseCase _saveImagesUseCase;
+    private readonly DeleteUnusedImagesUseCase _deleteUnusedImagesUseCase;
+    private readonly DeleteImagesUseCase _deleteImagesUseCase;
+
+    public ImageService(
+        SaveImagesUseCase saveImagesUseCase,
+        DeleteUnusedImagesUseCase deleteUnusedImagesUseCase,
+        DeleteImagesUseCase deleteImagesUseCase)
+    {
+        _saveImagesUseCase = saveImagesUseCase;
+        _deleteUnusedImagesUseCase = deleteUnusedImagesUseCase;
+        _deleteImagesUseCase = deleteImagesUseCase;
+    }
+
     public List<EventImage> SaveImages(List<IFormFile> images, IWebHostEnvironment hostEnvironment)
     {
-        var savedImages = new List<EventImage>();
-        foreach (var image in images)
-        {
-            string imagePath = MyHelpers.SaveImage(image, hostEnvironment);
-            savedImages.Add(new EventImage { ImagePath = imagePath });
-        }
-        return savedImages;
+        return _saveImagesUseCase.Execute(images, hostEnvironment);
     }
 
     public void DeleteUnusedImages(IWebHostEnvironment hostEnvironment, ModsenContext context)
     {
-        MyHelpers.DeleteUnusedImages(hostEnvironment, context);
+        _deleteUnusedImagesUseCase.Execute(hostEnvironment, context);
     }
 
     public void DeleteImages(IEnumerable<EventImage> eventImages, IWebHostEnvironment hostEnvironment)
     {
-        foreach (var eventImage in eventImages)
-        {
-            var imagePath = Path.Combine(hostEnvironment.WebRootPath, eventImage.ImagePath);
-            if (File.Exists(imagePath))
-            {
-                File.Delete(imagePath);
-            }
-        }
+        _deleteImagesUseCase.Execute(eventImages, hostEnvironment);
     }
 }
 }

@@ -21,11 +21,31 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
+
+builder.Services.AddScoped<RegisterUserUseCase>();
+builder.Services.AddScoped<LoginUserUseCase>();
+builder.Services.AddScoped<RefreshTokenUseCase>();
+builder.Services.AddScoped<GetAllUsersUseCase>();
 builder.Services.AddScoped<IUserService, UserService>();
 
+builder.Services.AddScoped<GetEventsUseCase>();
+builder.Services.AddScoped<CreateEventUseCase>();
+builder.Services.AddScoped<UpdateEventUseCase>();
+builder.Services.AddScoped<DeleteEventUseCase>();
+builder.Services.AddScoped<AddImagesToEventUseCase>();
 builder.Services.AddScoped<EventService>();
+
+builder.Services.AddScoped<SaveImagesUseCase>();
+builder.Services.AddScoped<DeleteUnusedImagesUseCase>();
+builder.Services.AddScoped<DeleteImagesUseCase>();
 builder.Services.AddScoped<ImageService>();
+
 builder.Services.AddScoped<EmailService>();
+
+builder.Services.AddScoped<GetEventMembersUseCase>();
+builder.Services.AddScoped<GetMemberByIdUseCase>();
+builder.Services.AddScoped<RegisterMemberUseCase>();
+builder.Services.AddScoped<UnregisterMemberUseCase>();
 builder.Services.AddScoped<MemberService>();
 
 builder.Services.AddAutoMapper(typeof(Program).Assembly, typeof(MappingProfile).Assembly);
