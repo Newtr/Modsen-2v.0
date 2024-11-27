@@ -54,6 +54,9 @@ builder.Services.AddSingleton<IExceptionHandler, ExceptionHandlerService>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddScoped<GenerateAccessTokenUseCase>();
+builder.Services.AddScoped<GenerateRefreshTokenUseCase>();
 builder.Services.AddScoped<TokenService>();
 
 builder.Services.AddAuthorization(options =>

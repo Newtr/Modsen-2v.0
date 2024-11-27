@@ -8,36 +8,25 @@ namespace Modsen.Infrastructure
 {
     public class TokenService
     {
-    private readonly IConfiguration _configuration;
+        private readonly GenerateAccessTokenUseCase _generateAccessTokenUseCase;
+        private readonly GenerateRefreshTokenUseCase _generateRefreshTokenUseCase;
 
-    public TokenService(IConfiguration configuration)
-    {
-        _configuration = configuration;
-    }
-
-    public string GenerateAccessToken(IEnumerable<Claim> claims)
-    {
-        var jwtSettings = _configuration.GetSection("JwtSettings");
-        var secretKey = Encoding.ASCII.GetBytes(jwtSettings["Secret"]);
-
-        var tokenDescriptor = new SecurityTokenDescriptor
+        public TokenService(
+            GenerateAccessTokenUseCase generateAccessTokenUseCase,
+            GenerateRefreshTokenUseCase generateRefreshTokenUseCase)
         {
-            Subject = new ClaimsIdentity(claims),
-            Expires = DateTime.UtcNow.AddMinutes(double.Parse(jwtSettings["AccessTokenExpiration"])),
-            Issuer = jwtSettings["Issuer"],
-            Audience = jwtSettings["Audience"],
-            SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(secretKey), SecurityAlgorithms.HmacSha256Signature)
-        };
+            _generateAccessTokenUseCase = generateAccessTokenUseCase;
+            _generateRefreshTokenUseCase = generateRefreshTokenUseCase;
+        }
 
-        var tokenHandler = new JwtSecurityTokenHandler();
-        var token = tokenHandler.CreateToken(tokenDescriptor);
+        public string GenerateAccessToken(IEnumerable<Claim> claims)
+        {
+            return _generateAccessTokenUseCase.Execute(claims);
+        }
 
-        return tokenHandler.WriteToken(token);
-    }
-
-    public string GenerateRefreshToken()
-    {
-        return Guid.NewGuid().ToString();
-    }
+        public string GenerateRefreshToken()
+        {
+            return _generateRefreshTokenUseCase.Execute();
+        }
     }
 }
