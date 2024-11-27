@@ -28,11 +28,13 @@ builder.Services.AddScoped<ImageService>();
 builder.Services.AddScoped<EmailService>();
 builder.Services.AddScoped<MemberService>();
 
+builder.Services.AddAutoMapper(typeof(Program).Assembly, typeof(MappingProfile).Assembly);
+
 builder.Services.AddSingleton<IExceptionHandler, ExceptionHandlerService>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddSingleton<TokenService>();
+builder.Services.AddScoped<TokenService>();
 
 builder.Services.AddAuthorization(options =>
 {

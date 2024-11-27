@@ -1,132 +1,110 @@
 using System.Data.Entity;
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Security.Cryptography;
-using System.Text;
-using Microsoft.IdentityModel.Tokens;
 using Modsen.Domain;
 using Modsen.DTO;
+using Modsen.Infrastructure;
 
 namespace Modsen.Application
 {
     public class UserService : IUserService
-{
-    private readonly IUnitOfWork _unitOfWork;
-
-    public UserService(IUnitOfWork unitOfWork)
     {
-        _unitOfWork = unitOfWork;
-    }
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly TokenService _tokenService;
 
-    public async Task<bool> RegisterUser(UserRegistrationDto registrationDto)
-    {
-        if (await _unitOfWork.UserRepository.AnyAsync(registrationDto.Email))
+        public UserService(IUnitOfWork unitOfWork, TokenService tokenService)
         {
-            throw new BadRequestException("User with this email already exists.");
+            _unitOfWork = unitOfWork;
+            _tokenService = tokenService;
         }
 
-        var passwordHash = BCrypt.Net.BCrypt.HashPassword(registrationDto.Password);
-
-        var newUser = new User
+        public async Task<bool> RegisterUser(UserRegistrationDto registrationDto)
         {
-            Username = registrationDto.Username,
-            Email = registrationDto.Email,
-            PasswordHash = passwordHash,
-            RoleId = 1,
-            RefreshToken = null,
-            RefreshTokenExpiryTime = DateTime.Now
-        };
+            if (await _unitOfWork.UserRepository.AnyAsync(registrationDto.Email))
+            {
+                throw new BadRequestException("User with this email already exists.");
+            }
 
-        await _unitOfWork.UserRepository.AddAsync(newUser);
-        await _unitOfWork.CommitAsync();
+            var passwordHash = BCrypt.Net.BCrypt.HashPassword(registrationDto.Password);
 
-        return true;
-    }
+            var newUser = new User
+            {
+                Username = registrationDto.Username,
+                Email = registrationDto.Email,
+                PasswordHash = passwordHash,
+                RoleId = 1,
+                RefreshToken = null,
+                RefreshTokenExpiryTime = DateTime.UtcNow
+            };
 
-    public async Task<(bool IsValid, string AccessToken, string RefreshToken)> LoginUser(UserLoginDto loginDto)
-    {
-        var user = await _unitOfWork.UserRepository.GetByEmailAsync(loginDto.Email);
+            await _unitOfWork.UserRepository.AddAsync(newUser);
+            await _unitOfWork.CommitAsync();
 
-        if (user == null || !BCrypt.Net.BCrypt.Verify(loginDto.Password, user.PasswordHash))
-        {
-            return (false, null, null);
+            return true;
         }
 
-        var accessToken = GenerateAccessToken(user);
-        var refreshToken = GenerateRefreshToken();
-
-        user.RefreshToken = refreshToken;
-        user.RefreshTokenExpiryTime = DateTime.Now.AddDays(1);
-        await _unitOfWork.CommitAsync();
-
-        return (true, accessToken, refreshToken);
-    }
-
-
-    public async Task<string> RefreshToken(string refreshToken)
-    {
-        var user = await _unitOfWork.UserRepository.GetByRefreshTokenAsync(refreshToken);
-
-        if (user == null || user.RefreshTokenExpiryTime <= DateTime.Now)
+        public async Task<(bool IsValid, string AccessToken, string RefreshToken)> LoginUser(UserLoginDto loginDto)
         {
-            throw new UnauthorizedException("Invalid or expired refresh token.");
+            var user = await _unitOfWork.UserRepository.GetByEmailAsync(loginDto.Email);
+
+            if (user == null || !BCrypt.Net.BCrypt.Verify(loginDto.Password, user.PasswordHash))
+            {
+                return (false, null, null);
+            }
+
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Name, user.Username),
+                new Claim(ClaimTypes.Email, user.Email),
+                new Claim(ClaimTypes.Role, user.Role.RoleName)
+            };
+
+            var accessToken = _tokenService.GenerateAccessToken(claims);
+            var refreshToken = _tokenService.GenerateRefreshToken();
+
+            user.RefreshToken = refreshToken;
+            user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(1);
+            await _unitOfWork.CommitAsync();
+
+            return (true, accessToken, refreshToken);
         }
 
-        return GenerateAccessToken(user);
-    }
-
-    public async Task<IEnumerable<User>> GetAllUsers(int page, int pageSize)
-    {
-        if (page <= 0 || pageSize <= 0)
+        public async Task<string> RefreshToken(string refreshToken)
         {
-            throw new BadRequestException("Page and pageSize must be greater than zero.");
+            var user = await _unitOfWork.UserRepository.GetByRefreshTokenAsync(refreshToken);
+
+            if (user == null || user.RefreshTokenExpiryTime <= DateTime.UtcNow)
+            {
+                throw new UnauthorizedException("Invalid or expired refresh token.");
+            }
+
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Name, user.Username),
+                new Claim(ClaimTypes.Email, user.Email),
+                new Claim(ClaimTypes.Role, user.Role.RoleName)
+            };
+
+            return _tokenService.GenerateAccessToken(claims);
         }
 
-        var usersQuery = await _unitOfWork.UserRepository.GetUsersAsync(page, pageSize);
-        var users = await usersQuery
-            .AsNoTracking()
-            .ToListAsync();
-
-        if (!users.Any())
+        public async Task<IEnumerable<User>> GetAllUsers(int page, int pageSize)
         {
-            throw new NotFoundException("No users found.");
+            if (page <= 0 || pageSize <= 0)
+            {
+                throw new BadRequestException("Page and pageSize must be greater than zero.");
+            }
+
+            var usersQuery = await _unitOfWork.UserRepository.GetUsersAsync(page, pageSize);
+            var users = await usersQuery
+                .AsNoTracking()
+                .ToListAsync();
+
+            if (!users.Any())
+            {
+                throw new NotFoundException("No users found.");
+            }
+
+            return users;
         }
-
-        return users;
     }
-
-
-    private string GenerateAccessToken(User user)
-    {
-        var claims = new List<Claim>
-        {
-            new Claim(ClaimTypes.Name, user.Username),
-            new Claim(ClaimTypes.Email, user.Email),
-            new Claim(ClaimTypes.Role, user.Role.RoleName)
-        };
-
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("Yhsfddbqyajsdismasdpfwuaxjdfreqsadadyur"));
-        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-        var token = new JwtSecurityToken(
-            issuer: "Modsen-2v.0",
-            audience: "User",
-            claims: claims,
-            expires: DateTime.Now.AddMinutes(15),
-            signingCredentials: creds);
-
-        return new JwtSecurityTokenHandler().WriteToken(token); 
-    }
-   private string GenerateRefreshToken()
-    {
-        var randomNumber = new byte[32];
-        using (var rng = RandomNumberGenerator.Create())
-        {
-            rng.GetBytes(randomNumber);
-        }
-
-        return Convert.ToBase64String(randomNumber); 
-    }
-}
-
 }
