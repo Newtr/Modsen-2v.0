@@ -1,3 +1,4 @@
+using System.Data.Entity;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
@@ -81,7 +82,10 @@ namespace Modsen.Application
             throw new BadRequestException("Page and pageSize must be greater than zero.");
         }
 
-        var users = await _unitOfWork.UserRepository.GetUsersAsync(page, pageSize);
+        var usersQuery = await _unitOfWork.UserRepository.GetUsersAsync(page, pageSize);
+        var users = await usersQuery
+            .AsNoTracking()
+            .ToListAsync();
 
         if (!users.Any())
         {
@@ -90,6 +94,7 @@ namespace Modsen.Application
 
         return users;
     }
+
 
     private string GenerateAccessToken(User user)
     {

@@ -5,6 +5,6 @@ namespace Modsen.Domain
         Task<User> GetByEmailAsync(string email);
         Task<User> GetByRefreshTokenAsync(string refreshToken);
         Task<bool> AnyAsync(string email);
-        Task<IEnumerable<User>> GetUsersAsync(int page, int pageSize);
+        Task<IQueryable<User>> GetUsersAsync(int page, int pageSize);
     }
 }

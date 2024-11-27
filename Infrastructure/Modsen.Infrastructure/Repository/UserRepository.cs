@@ -34,12 +34,13 @@ namespace Modsen.Infrastructure
                 .SingleOrDefaultAsync(u => u.RefreshToken == refreshToken);
         }
 
-        public async Task<IEnumerable<User>> GetUsersAsync(int page, int pageSize)
+        public async Task<IQueryable<User>> GetUsersAsync(int page, int pageSize)
         {
-            return await _context.Users
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize)
-                .ToListAsync();
+            return await Task.Run(() =>
+                _context.Users
+                    .Skip((page - 1) * pageSize)
+                    .Take(pageSize)
+                    .AsQueryable());
         }
 
         public async Task<bool> AnyAsync(string email)

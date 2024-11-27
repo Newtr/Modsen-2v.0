@@ -1,5 +1,6 @@
 using Modsen.Domain;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Threading.Tasks;
 
 namespace Modsen.Application
@@ -12,12 +13,17 @@ namespace Modsen.Application
             if (!eventExists)
                 throw new NotFoundException($"Событие с ID {eventId} не найдено.");
 
-            return await FetchMembersByEventId(eventId);
+            return await FetchMembersByEventId(eventId)
+                .AsNoTracking()
+                .ToListAsync();
         }
+
 
         public async Task<Member> GetMemberByIdAsync(int memberId)
         {
-            var member = await FetchMemberByIdAsync(memberId);
+            var member = await FetchMemberByIdAsync(memberId)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(); 
             if (member == null)
                 throw new NotFoundException($"Участник с ID {memberId} не найден.");
 
@@ -59,12 +65,16 @@ namespace Modsen.Application
         private Task<bool> CheckEventExistsAsync(int eventId) => Task.FromResult(true); 
         private Task<bool> CheckMemberExistsAsync(int memberId) => Task.FromResult(true); 
         private Task<bool> IsMemberRegisteredAsync(int eventId, int memberId) => Task.FromResult(false); 
-        private Task<IEnumerable<Member>> FetchMembersByEventId(int eventId)
+        private IQueryable<Member> FetchMembersByEventId(int eventId)
         {
-            var members = new List<Member>(); 
-            return Task.FromResult<IEnumerable<Member>>(members.AsEnumerable());
-        } 
-        private Task<Member> FetchMemberByIdAsync(int memberId) => Task.FromResult<Member>(null); 
+            var members = new List<Member>();
+            return members.AsQueryable();
+        }
+        private IQueryable<Member> FetchMemberByIdAsync(int memberId)
+        {
+            var members = new List<Member>();
+            return members.Where(m => m.Id == memberId).AsQueryable();
+        }
         private Task RegisterMemberToEvent(int eventId, int memberId) => Task.CompletedTask; 
         private Task UnregisterMemberFromEvent(int eventId, int memberId) => Task.CompletedTask; 
     }
