@@ -17,10 +17,11 @@ namespace Modsen.Application
         {
             return await _context.Events
                 .AsNoTracking()
-                .Include(e => e.EventMembers)
-                .ThenInclude(em => em.MemberEvents)
+                .Include(e => e.EventMembers) 
+                .Include(e => e.EventImages) 
                 .ToListAsync(cancellationToken);
         }
+
 
         public async Task<MyEvent> GetEventByIdAsync(int id, CancellationToken cancellationToken)
         {

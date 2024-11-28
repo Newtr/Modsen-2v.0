@@ -7,15 +7,17 @@ namespace Modsen.Infrastructure
     {
         public UserRepository(ModsenContext context) : base(context) {}
 
-        public async Task<User> GetByEmailAsync(string email, CancellationToken cancellationToken = default)
+        public async Task<User?> GetByEmailAsync(string email, CancellationToken cancellationToken = default)
         {
-            return await Find(u => u.Email == email)
-                .FirstOrDefaultAsync(cancellationToken);
+            return await _dbSet
+                .Include(u => u.Role) 
+                .FirstOrDefaultAsync(u => u.Email == email, cancellationToken);
         }
-        public async Task<User> GetByRefreshTokenAsync(string refreshToken, CancellationToken cancellationToken = default)
+        public async Task<User?> GetByRefreshTokenAsync(string refreshToken, CancellationToken cancellationToken = default)
         {
-            return await Find(u => u.RefreshToken == refreshToken)
-                .FirstOrDefaultAsync(cancellationToken);
+            return await _dbSet
+                .Include(u => u.Role)
+                .FirstOrDefaultAsync(u => u.RefreshToken == refreshToken, cancellationToken);
         }
 
         public async Task<bool> AnyAsync(string email, CancellationToken cancellationToken = default)
