@@ -5,7 +5,7 @@ using Modsen.Domain;
 
 namespace Modsen.Application
 {
-    public class UpdateEventUseCase
+public class UpdateEventUseCase
 {
     private readonly IEventRepository _eventRepository;
     private readonly ImageService _imageService;

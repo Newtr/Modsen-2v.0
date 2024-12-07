@@ -33,7 +33,6 @@ builder.Services.AddScoped<CreateEventUseCase>();
 builder.Services.AddScoped<UpdateEventUseCase>();
 builder.Services.AddScoped<DeleteEventUseCase>();
 builder.Services.AddScoped<AddImagesToEventUseCase>();
-builder.Services.AddScoped<EventService>();
 
 builder.Services.AddScoped<SaveImagesUseCase>();
 builder.Services.AddScoped<DeleteUnusedImagesUseCase>();
@@ -46,7 +45,6 @@ builder.Services.AddScoped<GetEventMembersUseCase>();
 builder.Services.AddScoped<GetMemberByIdUseCase>();
 builder.Services.AddScoped<RegisterMemberUseCase>();
 builder.Services.AddScoped<UnregisterMemberUseCase>();
-builder.Services.AddScoped<MemberService>();
 
 builder.Services.AddAutoMapper(typeof(Program).Assembly, typeof(MappingProfile).Assembly);
 
