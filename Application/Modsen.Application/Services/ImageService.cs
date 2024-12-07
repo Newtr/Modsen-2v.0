@@ -26,9 +26,9 @@ public class ImageService
         return _saveImagesUseCase.Execute(images, hostEnvironment);
     }
 
-    public void DeleteUnusedImages(IWebHostEnvironment hostEnvironment, ModsenContext context)
+    public void DeleteUnusedImages(IWebHostEnvironment hostEnvironment, IEventRepository eventRepository, CancellationToken cancellationToken)
     {
-        _deleteUnusedImagesUseCase.Execute(hostEnvironment, context);
+        _deleteUnusedImagesUseCase.Execute(hostEnvironment, eventRepository, cancellationToken);
     }
 
     public void DeleteImages(IEnumerable<EventImage> eventImages, IWebHostEnvironment hostEnvironment)

@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Mail;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Modsen.Domain;
 using Modsen.Infrastructure;
 
 namespace Modsen.Application
@@ -43,13 +44,13 @@ namespace Modsen.Application
             return dbContext.Events.Any(e => e.Id == id);
         }
 
-        public static void DeleteUnusedImages(IWebHostEnvironment hostEnvironment, ModsenContext dbContext)
+        public static async Task DeleteUnusedImagesAsync(IWebHostEnvironment hostEnvironment, IEventRepository eventRepository, CancellationToken cancellationToken)
         {
             var uploadsFolder = Path.Combine(hostEnvironment.WebRootPath, "Images");
 
             var allFiles = Directory.GetFiles(uploadsFolder);
 
-            var usedImages = dbContext.EventImages.Select(img => img.ImagePath).ToList();
+            var usedImages = await eventRepository.GetAllEventImagePathsAsync(cancellationToken);
 
             foreach (var filePath in allFiles)
             {

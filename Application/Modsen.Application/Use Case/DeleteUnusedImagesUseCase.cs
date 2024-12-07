@@ -1,13 +1,14 @@
 using Microsoft.AspNetCore.Hosting;
+using Modsen.Domain;
 using Modsen.Infrastructure;
 
 namespace Modsen.Application
 {
 public class DeleteUnusedImagesUseCase
 {
-    public void Execute(IWebHostEnvironment hostEnvironment, ModsenContext context)
+    public void Execute(IWebHostEnvironment hostEnvironment, IEventRepository eventRepository, CancellationToken cancellationToken)
     {
-        MyHelpers.DeleteUnusedImages(hostEnvironment, context);
+        MyHelpers.DeleteUnusedImagesAsync(hostEnvironment, eventRepository, cancellationToken);
     }
 }
 }

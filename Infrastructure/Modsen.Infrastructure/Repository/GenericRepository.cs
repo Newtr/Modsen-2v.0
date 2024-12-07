@@ -9,7 +9,7 @@ namespace Modsen.Infrastructure
         protected readonly DbContext _context;
         protected readonly DbSet<T> _dbSet;
 
-        public GenericRepository(DbContext context)
+        public GenericRepository(DbContext context) 
         {
             _context = context;
             _dbSet = _context.Set<T>();
