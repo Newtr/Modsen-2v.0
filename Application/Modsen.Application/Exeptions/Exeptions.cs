@@ -1,4 +1,4 @@
-namespace Modsen.Domain
+namespace Modsen.Application
 {
     public class NotFoundException : Exception
     {
