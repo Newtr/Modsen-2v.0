@@ -30,11 +30,12 @@ namespace Modsen.Infrastructure
             return await GetPagedAsync(page, pageSize, cancellationToken);
         }
 
-        public async Task<IQueryable<User>> GetUsersAsync(int page, int pageSize)
+        public async Task<IEnumerable<User>> GetUsersAsync(int page, int pageSize)
         {
-            return _dbSet.AsNoTracking()
-                        .Skip((page - 1) * pageSize)
-                        .Take(pageSize);
+            return await _dbSet.AsNoTracking()
+                            .Skip((page - 1) * pageSize)
+                            .Take(pageSize)
+                            .ToListAsync();
         }
 
     }

@@ -49,14 +49,16 @@ namespace Modsen.Infrastructure
                 .ToListAsync(cancellationToken);
         }
 
-        public IQueryable<T> Find(Expression<Func<T, bool>> predicate)
+        public async Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate)
         {
-            return _dbSet.Where(predicate).AsQueryable();
+            return await _dbSet.Where(predicate).ToListAsync();
         }
 
-        public IQueryable<T> Include(Expression<Func<T, object>> includeExpression)
+
+        public async Task<IEnumerable<T>> IncludeAsync(Expression<Func<T, object>> includeExpression)
         {
-            return _dbSet.Include(includeExpression);
+            return await _dbSet.Include(includeExpression).ToListAsync();
         }
+
     }
 }

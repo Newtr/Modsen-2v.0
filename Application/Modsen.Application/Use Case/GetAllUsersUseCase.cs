@@ -21,7 +21,7 @@ public class GetAllUsersUseCase
 
         var usersQuery = await _unitOfWork.UserRepository.GetUsersAsync(page, pageSize);
 
-        var users = await usersQuery.AsNoTracking().ToListAsync(cancellationToken);
+        var users = await _unitOfWork.UserRepository.GetUsersAsync(page, pageSize);
 
         if (!users.Any())
         {
