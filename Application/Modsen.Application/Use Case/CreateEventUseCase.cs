@@ -1,32 +1,36 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Modsen.Domain;
-using Modsen.Infrastructure;
 
 namespace Modsen.Application
 {
     public class CreateEventUseCase
     {
-        private readonly ModsenContext _context;
+        private readonly IEventRepository _eventRepository;
         private readonly ImageService _imageService;
 
-        public CreateEventUseCase(ModsenContext context, ImageService imageService)
+        public CreateEventUseCase(IEventRepository eventRepository, ImageService imageService)
         {
-            _context = context;
+            _eventRepository = eventRepository;
             _imageService = imageService;
         }
 
-        public async Task<MyEvent> CreateEventAsync(MyEvent newEvent, List<IFormFile> eventImages, IWebHostEnvironment hostEnvironment, CancellationToken cancellationToken)
+        public async Task<MyEvent> CreateEventAsync(
+            MyEvent newEvent, 
+            List<IFormFile> eventImages, 
+            IWebHostEnvironment hostEnvironment, 
+            CancellationToken cancellationToken)
         {
             newEvent.EventImages = _imageService.SaveImages(eventImages, hostEnvironment);
 
-            _context.Events.Add(newEvent);
+            await _eventRepository.AddEventAsync(newEvent, cancellationToken);
 
-            await _context.SaveChangesAsync(cancellationToken);
+            await _eventRepository.SaveChangesAsync(cancellationToken);
 
-            _imageService.DeleteUnusedImages(hostEnvironment, _context);
+            _imageService.DeleteUnusedImages(hostEnvironment, _eventRepository, cancellationToken);
 
             return newEvent;
         }
     }
+
 }

@@ -1,37 +1,30 @@
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.EntityFrameworkCore;
 using Modsen.Domain;
-using Modsen.Infrastructure;
 
 namespace Modsen.Application
 {
     public class DeleteEventUseCase
     {
-        private readonly ModsenContext _context;
+        private readonly IEventRepository _eventRepository;
         private readonly ImageService _imageService;
 
-        public DeleteEventUseCase(ModsenContext context, ImageService imageService)
+        public DeleteEventUseCase(IEventRepository eventRepository, ImageService imageService)
         {
-            _context = context;
+            _eventRepository = eventRepository;
             _imageService = imageService;
         }
 
         public async Task DeleteEventAsync(int eventId, IWebHostEnvironment hostEnvironment, CancellationToken cancellationToken)
         {
-            var myEvent = await _context.Events
-                .Include(e => e.EventImages)
-                .FirstOrDefaultAsync(e => e.Id == eventId, cancellationToken);
+            var myEvent = await _eventRepository.GetEventByIdAsync(eventId, cancellationToken);
 
             if (myEvent == null)
                 throw new NotFoundException("Event not found.");
 
             _imageService.DeleteImages(myEvent.EventImages, hostEnvironment);
 
-            _context.EventImages.RemoveRange(myEvent.EventImages);
-
-            _context.Events.Remove(myEvent);
-
-            await _context.SaveChangesAsync(cancellationToken);
+            await _eventRepository.DeleteEventAsync(myEvent, cancellationToken);
         }
     }
+
 }

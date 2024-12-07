@@ -1,6 +1,4 @@
-using Microsoft.EntityFrameworkCore;
 using Modsen.Domain;
-using Modsen.Infrastructure;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -8,31 +6,25 @@ using System.Threading.Tasks;
 
 namespace Modsen.Application
 {
-    public class GetMemberByIdUseCase
+public class GetMemberByIdUseCase
 {
-    private readonly ModsenContext _context;
+    private readonly IMemberRepository _memberRepository;
 
-    public GetMemberByIdUseCase(ModsenContext context)
+    public GetMemberByIdUseCase(IMemberRepository memberRepository)
     {
-        _context = context ?? throw new ArgumentNullException(nameof(context));
+        _memberRepository = memberRepository ?? throw new ArgumentNullException(nameof(memberRepository));
     }
 
     public async Task<Member> ExecuteAsync(int memberId, CancellationToken cancellationToken)
     {
-        var member = await FetchMemberByIdAsync(memberId)
-            .AsNoTracking()
-            .FirstOrDefaultAsync(cancellationToken);
+        var member = await _memberRepository.GetMemberByIdAsync(memberId, cancellationToken);
 
         if (member == null)
             throw new NotFoundException($"Участник с ID {memberId} не найден.");
 
         return member;
     }
-
-    private IQueryable<Member> FetchMemberByIdAsync(int memberId)
-    {
-        return _context.Set<Member>().Where(m => m.Id == memberId);
-    }
 }
+
 
 }

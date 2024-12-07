@@ -1,4 +1,3 @@
-using Microsoft.EntityFrameworkCore;
 using Modsen.Domain;
 
 namespace Modsen.Application

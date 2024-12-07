@@ -3,7 +3,6 @@ using System.Net.Mail;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Modsen.Domain;
-using Modsen.Infrastructure;
 
 namespace Modsen.Application
 {
@@ -39,10 +38,11 @@ namespace Modsen.Application
         }
 
 
-        public static bool EventExists(int id, ModsenContext dbContext)
+        public static bool EventExists(int id, IEventChecker eventChecker)
         {
-            return dbContext.Events.Any(e => e.Id == id);
+            return eventChecker.EventExists(id);
         }
+
 
         public static async Task DeleteUnusedImagesAsync(IWebHostEnvironment hostEnvironment, IEventRepository eventRepository, CancellationToken cancellationToken)
         {

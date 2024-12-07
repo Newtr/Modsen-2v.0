@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Hosting;
 using Modsen.Domain;
-using Modsen.Infrastructure;
 
 namespace Modsen.Application
 {

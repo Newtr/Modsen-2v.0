@@ -1,64 +1,37 @@
-using Microsoft.EntityFrameworkCore;
 using Modsen.Domain;
-using Modsen.Infrastructure;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Modsen.Application
 {
-    public class RegisterMemberUseCase
+public class RegisterMemberUseCase
 {
-    private readonly ModsenContext _context;
+    private readonly IEventRepository _eventRepository;
+    private readonly IMemberRepository _memberRepository;
 
-    public RegisterMemberUseCase(ModsenContext context)
+    public RegisterMemberUseCase(IEventRepository eventRepository, IMemberRepository memberRepository)
     {
-        _context = context;
+        _eventRepository = eventRepository ?? throw new ArgumentNullException(nameof(eventRepository));
+        _memberRepository = memberRepository ?? throw new ArgumentNullException(nameof(memberRepository));
     }
 
     public async Task<string> ExecuteAsync(int eventId, int memberId, CancellationToken cancellationToken)
     {
-        var eventExists = await CheckEventExistsAsync(eventId, cancellationToken);
+        var eventExists = await _eventRepository.ExistsAsync(eventId, cancellationToken);
         if (!eventExists)
             throw new NotFoundException($"Событие с ID {eventId} не найдено.");
 
-        var memberExists = await CheckMemberExistsAsync(memberId, cancellationToken);
+        var memberExists = await _memberRepository.ExistsAsync(memberId, cancellationToken);
         if (!memberExists)
             throw new NotFoundException($"Участник с ID {memberId} не найден.");
 
-        var alreadyRegistered = await IsMemberRegisteredAsync(eventId, memberId, cancellationToken);
+        var alreadyRegistered = await _memberRepository.IsMemberRegisteredAsync(eventId, memberId, cancellationToken);
         if (alreadyRegistered)
             throw new BadRequestException($"Участник с ID {memberId} уже зарегистрирован на событие с ID {eventId}.");
 
-        await RegisterMemberToEvent(eventId, memberId, cancellationToken);
+        await _memberRepository.RegisterMemberToEventAsync(eventId, memberId, cancellationToken);
+
         return $"Участник с ID {memberId} успешно зарегистрирован на событие с ID {eventId}.";
-    }
-
-    private async Task<bool> CheckEventExistsAsync(int eventId, CancellationToken cancellationToken)
-    {
-        return await _context.Set<MyEvent>().AnyAsync(e => e.Id == eventId, cancellationToken);
-    }
-
-    private async Task<bool> CheckMemberExistsAsync(int memberId, CancellationToken cancellationToken)
-    {
-        return await _context.Set<Member>().AnyAsync(m => m.Id == memberId, cancellationToken);
-    }
-
-    private async Task<bool> IsMemberRegisteredAsync(int eventId, int memberId, CancellationToken cancellationToken)
-    {
-        return await _context.Set<Dictionary<string, object>>("EventsAndMembers")
-            .AnyAsync(eam => (int)eam["EventID"] == eventId && (int)eam["MemberID"] == memberId, cancellationToken);
-    }
-
-    private async Task RegisterMemberToEvent(int eventId, int memberId, CancellationToken cancellationToken)
-    {
-        var newEventMember = new Dictionary<string, object>
-        {
-            { "EventID", eventId },
-            { "MemberID", memberId }
-        };
-
-        _context.Set<Dictionary<string, object>>("EventsAndMembers").Add(newEventMember);
-        await _context.SaveChangesAsync(cancellationToken);
     }
 }
 

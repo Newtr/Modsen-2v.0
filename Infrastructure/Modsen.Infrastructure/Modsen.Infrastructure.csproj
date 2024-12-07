@@ -2,7 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Domain\Modsen.Domain\Modsen.Domain.csproj" />
-    
+    <ProjectReference Include="..\..\Application\Modsen.Application\Modsen.Application.csproj" />
   </ItemGroup>
 
   <ItemGroup>

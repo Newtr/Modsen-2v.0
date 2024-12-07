@@ -1,8 +1,6 @@
-using System.Data.Entity;
 using System.Security.Claims;
 using Modsen.Domain;
 using Modsen.DTO;
-using Modsen.Infrastructure;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -29,7 +27,7 @@ namespace Modsen.Application
 
     public Task RegisterUser(UserRegistrationDto registrationDto, CancellationToken cancellationToken)
     {
-        return _registerUserUseCase.Execute(registrationDto, cancellationToken); // Return Task
+        return _registerUserUseCase.Execute(registrationDto, cancellationToken);
     }
 
     public Task<(bool isValid, string accessToken, string refreshToken)> LoginUser(UserLoginDto loginDto, CancellationToken cancellationToken)

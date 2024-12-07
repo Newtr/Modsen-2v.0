@@ -59,6 +59,12 @@ builder.Services.AddScoped<GenerateAccessTokenUseCase>();
 builder.Services.AddScoped<GenerateRefreshTokenUseCase>();
 builder.Services.AddScoped<TokenService>();
 
+builder.Services.AddScoped<IEventChecker, EventChecker>();
+builder.Services.AddScoped<IEventRepository, EventRepository>();
+builder.Services.AddScoped<IMemberRepository, MemberRepository>();
+builder.Services.AddScoped<ITokenService, TokenService>();
+
+
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));

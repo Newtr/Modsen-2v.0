@@ -1,18 +1,17 @@
 using System.Security.Claims;
 using Modsen.Domain;
-using Modsen.Infrastructure;
 
 namespace Modsen.Application
 {
 public class RefreshTokenUseCase
 {
     private readonly IUnitOfWork _unitOfWork;
-    private readonly TokenService _tokenService;
+    private readonly ITokenService _tokenService; 
 
-    public RefreshTokenUseCase(IUnitOfWork unitOfWork, TokenService tokenService)
+    public RefreshTokenUseCase(IUnitOfWork unitOfWork, ITokenService tokenService)
     {
-        _unitOfWork = unitOfWork;
-        _tokenService = tokenService;
+        _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+        _tokenService = tokenService ?? throw new ArgumentNullException(nameof(tokenService));
     }
 
     public async Task<string> Execute(string refreshToken, CancellationToken cancellationToken = default)
@@ -33,7 +32,7 @@ public class RefreshTokenUseCase
 
         return _tokenService.GenerateAccessToken(claims);
     }
-
 }
+
 
 }

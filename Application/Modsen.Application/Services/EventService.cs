@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Modsen.Domain;
-using Modsen.Infrastructure;
 using System.Threading;
 
 namespace Modsen.Application

@@ -3,22 +3,22 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using Modsen.Domain;
 
 namespace Modsen.Infrastructure
 {
-    public class TokenService
-    {
-        private readonly GenerateAccessTokenUseCase _generateAccessTokenUseCase;
-        private readonly GenerateRefreshTokenUseCase _generateRefreshTokenUseCase;
+public class TokenService : ITokenService
+{
+    private readonly GenerateAccessTokenUseCase _generateAccessTokenUseCase;
+    private readonly GenerateRefreshTokenUseCase _generateRefreshTokenUseCase;
 
-        public TokenService(
+    public TokenService(
             GenerateAccessTokenUseCase generateAccessTokenUseCase,
             GenerateRefreshTokenUseCase generateRefreshTokenUseCase)
         {
             _generateAccessTokenUseCase = generateAccessTokenUseCase;
             _generateRefreshTokenUseCase = generateRefreshTokenUseCase;
         }
-
         public string GenerateAccessToken(IEnumerable<Claim> claims)
         {
             return _generateAccessTokenUseCase.Execute(claims);
@@ -28,5 +28,6 @@ namespace Modsen.Infrastructure
         {
             return _generateRefreshTokenUseCase.Execute();
         }
-    }
 }
+}
+

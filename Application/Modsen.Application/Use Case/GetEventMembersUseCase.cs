@@ -1,53 +1,29 @@
 using AutoMapper.Execution;
-using Microsoft.EntityFrameworkCore;
 using Modsen.Domain;
 using Member = Modsen.Domain.Member;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Modsen.Infrastructure;
 
 namespace Modsen.Application
 {
     public class GetEventMembersUseCase
 {
-    private readonly ModsenContext _context;
+    private readonly IEventRepository _eventRepository;
 
-    public GetEventMembersUseCase(ModsenContext context)
+    public GetEventMembersUseCase(IEventRepository eventRepository)
     {
-        _context = context ?? throw new ArgumentNullException(nameof(context));
+        _eventRepository = eventRepository ?? throw new ArgumentNullException(nameof(eventRepository));
     }
 
     public async Task<IEnumerable<Member>> ExecuteAsync(int eventId, CancellationToken cancellationToken)
     {
-        var eventExists = await CheckEventExistsAsync(eventId, cancellationToken);
+        var eventExists = await _eventRepository.CheckEventExistsAsync(eventId, cancellationToken);
         if (!eventExists)
             throw new NotFoundException($"Событие с ID {eventId} не найдено.");
 
-        return await FetchMembersByEventId(eventId)
-            .AsNoTracking()
-            .ToListAsync(cancellationToken);
-    }
-
-    private async Task<bool> CheckEventExistsAsync(int eventId, CancellationToken cancellationToken)
-    {
-        return await _context.Set<MyEvent>()
-            .AnyAsync(e => e.Id == eventId, cancellationToken);
-    }
-
-    private IQueryable<Member> FetchMembersByEventId(int eventId)
-    {
-        return _context.Set<Dictionary<string, object>>("EventsAndMembers")
-            .Where(eam => (int)eam["EventID"] == eventId)
-            .Join(
-                _context.Set<Member>(), 
-                eam => (int)eam["MemberID"], 
-                member => member.Id, 
-                (eam, member) => member 
-            )
-            .AsQueryable();
+        return await _eventRepository.GetEventMembersAsync(eventId, cancellationToken);
     }
 }
-
 }
