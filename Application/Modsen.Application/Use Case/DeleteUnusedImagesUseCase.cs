@@ -5,9 +5,21 @@ namespace Modsen.Application
 {
 public class DeleteUnusedImagesUseCase
 {
-    public void Execute(IWebHostEnvironment hostEnvironment, IEventRepository eventRepository, CancellationToken cancellationToken)
+    public async Task Execute(IWebHostEnvironment hostEnvironment, IEventRepository eventRepository, CancellationToken cancellationToken)
     {
-        MyHelpers.DeleteUnusedImagesAsync(hostEnvironment, eventRepository, cancellationToken);
+        var uploadsFolder = Path.Combine(hostEnvironment.WebRootPath, "Images");
+
+        var allFiles = Directory.GetFiles(uploadsFolder);
+        var usedImages = await eventRepository.GetAllEventImagePathsAsync(cancellationToken);
+
+        foreach (var filePath in allFiles)
+        {
+            var fileName = Path.GetFileName(filePath);
+            if (!usedImages.Contains("Images\\" + fileName))
+            {
+                System.IO.File.Delete(filePath);
+            }
+        }
     }
 }
 }

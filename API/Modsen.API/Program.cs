@@ -67,6 +67,13 @@ builder.Services.AddScoped<ITokenClaimsService, TokenClaimsService>();
 builder.Services.AddScoped<IPasswordHashingService, PasswordHashingService>();
 builder.Services.AddScoped<ITokenClaimsService, TokenClaimsService>();
 
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+builder.Services.AddScoped<SaveImagesUseCase>();
+builder.Services.AddScoped<DeleteUnusedImagesUseCase>();
+builder.Services.AddScoped<SendEmailUseCase>();
+builder.Services.AddScoped<EmailService>();
+builder.Services.AddScoped<ImageService>();
+
 
 builder.Services.AddAuthorization(options =>
 {
