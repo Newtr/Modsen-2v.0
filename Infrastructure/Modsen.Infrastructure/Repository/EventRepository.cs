@@ -123,5 +123,14 @@ namespace Modsen.Infrastructure
         {
             return await _context.Set<MyEvent>().AnyAsync(e => e.Id == eventId, cancellationToken);
         }
+
+        public async Task UpdateAsync(MyEvent entity, CancellationToken cancellationToken)
+        {
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
+
+            _context.Set<MyEvent>().Update(entity);
+            await _context.SaveChangesAsync(cancellationToken);
+        }
     }
 }

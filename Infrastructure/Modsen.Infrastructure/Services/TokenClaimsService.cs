@@ -12,14 +12,13 @@ public class TokenClaimsService : ITokenClaimsService
         _tokenService = tokenService ?? throw new ArgumentNullException(nameof(tokenService));
     }
 
-    public (string AccessToken, string RefreshToken) GenerateTokens(User user, Member member)
+    public (string AccessToken, string RefreshToken) GenerateTokens(User user)
     {
         var claims = new List<Claim>
         {
             new Claim(ClaimTypes.Name, user.Username),
             new Claim(ClaimTypes.Email, user.Email),
             new Claim(ClaimTypes.Role, user.Role.RoleName),
-            new Claim("MemberId", member.Id.ToString())
         };
 
         var accessToken = _tokenService.GenerateAccessToken(claims);

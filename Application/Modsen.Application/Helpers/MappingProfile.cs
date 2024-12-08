@@ -16,6 +16,8 @@ namespace Modsen.Application
             CreateMap<Member, MemberDto>().ReverseMap();
 
             CreateMap<User, UserLoginDto>().ReverseMap();
+
+            CreateMap<MyEvent, MyEvent>().ReverseMap();
         }
     }
 }

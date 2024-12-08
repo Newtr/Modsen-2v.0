@@ -1,10 +1,12 @@
 using System.Text;
+using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Modsen.API;
 using Modsen.Application;
 using Modsen.Domain;
+using Modsen.DTO;
 using Modsen.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -73,6 +75,11 @@ builder.Services.AddScoped<DeleteUnusedImagesUseCase>();
 builder.Services.AddScoped<SendEmailUseCase>();
 builder.Services.AddScoped<EmailService>();
 builder.Services.AddScoped<ImageService>();
+
+builder.Services.AddScoped<IValidator<UserRegistrationDto>, UserRegistrationDtoValidator>();
+builder.Services.AddScoped<IValidator<UserLoginDto>, UserLoginDtoValidator>();
+builder.Services.AddScoped<IValidator<MemberDto>, MemberDtoValidator>();
+builder.Services.AddScoped<IValidator<EventDto>, EventDtoValidator>();
 
 
 builder.Services.AddAuthorization(options =>

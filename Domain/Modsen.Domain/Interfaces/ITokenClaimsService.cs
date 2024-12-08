@@ -2,7 +2,7 @@ namespace Modsen.Domain
 {
 public interface ITokenClaimsService
 {
-    (string AccessToken, string RefreshToken) GenerateTokens(User user, Member member);
+    (string AccessToken, string RefreshToken) GenerateTokens(User user);
     string GenerateAccessToken(User user);
 }
 }
