@@ -4,7 +4,7 @@ using Modsen.Domain;
 
 namespace Modsen.Application
 {
-    public class AddImagesToEventUseCase
+public class AddImagesToEventUseCase
 {
     private readonly IEventRepository _eventRepository;
     private readonly ImageService _imageService;

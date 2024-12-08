@@ -1,12 +1,9 @@
-using System.Security.Claims;
 using Modsen.Domain;
 using Modsen.DTO;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Modsen.Application
 {
-   public class UserService : IUserService
+public class UserService : IUserService
 {
     private readonly RegisterUserUseCase _registerUserUseCase;
     private readonly LoginUserUseCase _loginUserUseCase;

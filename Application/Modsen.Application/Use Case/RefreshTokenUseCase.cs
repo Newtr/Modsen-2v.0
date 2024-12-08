@@ -6,12 +6,12 @@ namespace Modsen.Application
 public class RefreshTokenUseCase
 {
     private readonly IUnitOfWork _unitOfWork;
-    private readonly ITokenService _tokenService; 
+    private readonly ITokenClaimsService _tokenClaimsService;
 
-    public RefreshTokenUseCase(IUnitOfWork unitOfWork, ITokenService tokenService)
+    public RefreshTokenUseCase(IUnitOfWork unitOfWork, ITokenClaimsService tokenClaimsService)
     {
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
-        _tokenService = tokenService ?? throw new ArgumentNullException(nameof(tokenService));
+        _tokenClaimsService = tokenClaimsService ?? throw new ArgumentNullException(nameof(tokenClaimsService));
     }
 
     public async Task<string> Execute(string refreshToken, CancellationToken cancellationToken = default)
@@ -23,16 +23,8 @@ public class RefreshTokenUseCase
             throw new UnauthorizedException("Invalid or expired refresh token.");
         }
 
-        var claims = new List<Claim>
-        {
-            new Claim(ClaimTypes.Name, user.Username),
-            new Claim(ClaimTypes.Email, user.Email),
-            new Claim(ClaimTypes.Role, user.Role.RoleName)
-        };
-
-        return _tokenService.GenerateAccessToken(claims);
+        return _tokenClaimsService.GenerateAccessToken(user);
     }
 }
-
 
 }

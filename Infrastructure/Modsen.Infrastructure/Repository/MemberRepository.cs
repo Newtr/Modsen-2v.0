@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Modsen.Application;
 using Modsen.Domain;
 
 namespace Modsen.Infrastructure

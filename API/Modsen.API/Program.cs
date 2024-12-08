@@ -62,6 +62,8 @@ builder.Services.AddScoped<IEventRepository, EventRepository>();
 builder.Services.AddScoped<IMemberRepository, MemberRepository>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 
+builder.Services.AddScoped<ITokenClaimsService, TokenClaimsService>();
+
 
 builder.Services.AddAuthorization(options =>
 {
