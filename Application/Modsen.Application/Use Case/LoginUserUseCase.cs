@@ -7,20 +7,22 @@ public class LoginUserUseCase
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly ITokenClaimsService _tokenClaimsService;
+    private readonly IPasswordHashingService _passwordHashingService;
     private readonly IMemberRepository _memberRepository;
 
-    public LoginUserUseCase(IUnitOfWork unitOfWork, ITokenClaimsService tokenClaimsService, IMemberRepository memberRepository)
+    public LoginUserUseCase(IUnitOfWork unitOfWork, ITokenClaimsService tokenClaimsService, IPasswordHashingService passwordHashingService, IMemberRepository memberRepository)
     {
-        _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
-        _tokenClaimsService = tokenClaimsService ?? throw new ArgumentNullException(nameof(tokenClaimsService));
-        _memberRepository = memberRepository ?? throw new ArgumentNullException(nameof(memberRepository));
+        _unitOfWork = unitOfWork;
+        _tokenClaimsService = tokenClaimsService;
+        _passwordHashingService = passwordHashingService;
+        _memberRepository = memberRepository;
     }
 
     public async Task<(bool IsValid, string AccessToken, string RefreshToken)> Execute(UserLoginDto loginDto, CancellationToken cancellationToken = default)
     {
         var user = await _unitOfWork.UserRepository.GetByEmailAsync(loginDto.Email, cancellationToken);
 
-        if (user == null || !BCrypt.Net.BCrypt.Verify(loginDto.Password, user.PasswordHash))
+        if (user == null || !_passwordHashingService.VerifyPassword(loginDto.Password, user.PasswordHash))
         {
             return (false, null, null);
         }

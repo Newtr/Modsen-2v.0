@@ -64,6 +64,9 @@ builder.Services.AddScoped<ITokenService, TokenService>();
 
 builder.Services.AddScoped<ITokenClaimsService, TokenClaimsService>();
 
+builder.Services.AddScoped<IPasswordHashingService, PasswordHashingService>();
+builder.Services.AddScoped<ITokenClaimsService, TokenClaimsService>();
+
 
 builder.Services.AddAuthorization(options =>
 {
